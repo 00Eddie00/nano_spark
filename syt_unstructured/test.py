@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from tool.cal_bcnl import cal_out_boundary_length
+from syt_unstructured.tool.cal_bcnl import cal_out_boundary_length
 
 
 class MyTestCase(unittest.TestCase):
