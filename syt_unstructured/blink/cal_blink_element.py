@@ -1,6 +1,6 @@
 import numpy as np
-from blink.blink_parameters import *
-from tool.cal_bcnl import *
+from syt_unstructured.blink.blink_parameters import *
+from syt_unstructured.tool.cal_bcnl import *
 
 
 def fn(f, g):
