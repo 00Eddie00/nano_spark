@@ -53,11 +53,11 @@ K_SL_MINUS = 1000
 SL_T = 1.124
 
 # 网格参数
-grid_file_name = "../config/nano/4RYRgridt.dat"
+nano_grid_file_name = "../config/nano/4RYRgridt.dat"
 nod_file_name = "../config/nano/4RYRnod.dat"
 npoch_file_name = "../config/nano/4RYRnpoch.dat"
 npoch = np.loadtxt(npoch_file_name, dtype=int)
-grid = np.loadtxt(grid_file_name, dtype=np.float64)
+grid = np.loadtxt(nano_grid_file_name, dtype=np.float64)
 nod = np.loadtxt(nod_file_name, dtype=int) - 1
 NE = len(nod)
 NP = len(grid)

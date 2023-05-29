@@ -1,14 +1,17 @@
 import unittest
 import numpy as np
-from syt_unstructured.tool.cal_bcnl import cal_out_boundary_length
-
+import os
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        nano_avg=np.loadtxt("result/NANO/nano_avg/avg.dat")
-        avg=nano_avg[:,:3]
-        xx=np.arange(2001)
-        print(avg[:,2])
+        dirnames = ["Ca", "CaB", "CaF","CaB"]
+        path = "result/"
+        nano = "NANO/"
+        open = "OPEN/"
+        filenames1 = os.listdir("result/NANO/CaB/")  # 目前所有步数的浓度文件
+        print(filenames1[-1])
+        print(len(filenames1))
+
 
 
 if __name__ == '__main__':

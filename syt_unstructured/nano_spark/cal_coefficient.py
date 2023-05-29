@@ -3,7 +3,7 @@ from open_parameters import *
 
 
 def open_coefficient():
-    grid_coordinates = np.loadtxt(grid_file_name, delimiter=",")  # 点坐标
+    grid_coordinates = np.loadtxt(open_grid_file_name, delimiter=",")  # 点坐标
     neighbors = np.loadtxt(neighbors_file_name, int, delimiter=",")  # 邻点
     point_count = len(grid_coordinates)
     # 上下外内
@@ -58,8 +58,8 @@ def open_coefficient():
 
 def main():
     coefficient = open_coefficient()
-    np.savetxt(coefficient_file_name, coefficient, delimiter=",")
-
+    # np.savetxt(coefficient_file_name, coefficient, delimiter=",")
+    np.save("../config/open/coefficient", coefficient)
 
 if __name__ == "__main__":
     main()

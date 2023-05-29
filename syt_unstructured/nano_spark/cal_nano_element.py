@@ -1,6 +1,6 @@
 from nano_parameters import *
-from syt_unstructured.tool.cal_bcnl import *
 import numpy as np
+from tool.cal_bcnl import *
 
 
 def cal_dye_and_buffers(f, caf, cag, cab1, cab2, cab3, cab4):
@@ -41,7 +41,7 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                                                                                                               cab4)
     # 计算三角形系数
     single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
-        grid_file_name, nod_file_name)
+        nano_grid_file_name, nod_file_name)
 
     # 上一次迭代得到的值
     last = np.zeros(NP)
@@ -90,15 +90,11 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                     fjk = (f2jk + f3jk) / 3.0
                     if len(in_boundary) == 2 and k_ryr != 0:
                         length_j = cal_length(in_boundary, grid)
-                        # item_4 = item_4 + k_ryr * (CA_JSR - fjk) * length_j
-                        # item_4 = item_4 + k_ryr * CA_JSR * length_j
-                        item_4 = item_4 + k_ryr * ca_jsr * length_j
+                        item_4 = item_4 + k_ryr * (ca_jsr - fjk) * length_j
                         item_5 = item_5 - k_ryr * length_j / 3.0
                     elif len(out_boundary) == 2:
                         length_k = cal_length(out_boundary, grid)
-                        # item_6 = item_6 + (D_CA / Delta_r) * (C_CA_OUT - fjk) * length_k
-                        # item_6 = item_6 + (D_CA / Delta_r) * 0.0001 * length_k
-                        item_6 = item_6 + (D_CA / Delta_r) * c_ca_out * length_k
+                        item_6 = item_6 + (D_CA / Delta_r) * (c_ca_out - fjk) * length_k
                         item_7 = item_7 - (D_CA / Delta_r) * length_k / 3.0
 
             temp[i] = ((item_2 + item_1 + item_4 + item_6) * DT + control_area[i] * f[i]) / (
@@ -115,7 +111,7 @@ def nano_calculation_g2(f, caf, c_caf_out):
     for i in range(0, NP):
         j_fdye[i] = -K_F3_PLUS * f[i] * (F3_T - caf[i]) + K_F3_MINUS * caf[i]
     single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
-        grid_file_name, nod_file_name)
+        nano_grid_file_name, nod_file_name)
 
     last = np.zeros(NP)
     temp = np.zeros(NP)
@@ -154,9 +150,7 @@ def nano_calculation_g2(f, caf, c_caf_out):
                     gk = (g2k + g3k) / 3.0
                     if len(out_boundary) == 2:
                         length_k = cal_length(out_boundary, grid)
-                        # item_4 = item_4 + (D_CAF / Delta_r) * (C_CAF_OUT - gk) * length_k
-                        # item_4 = item_4 + (D_CAF / Delta_r) * (1 / 245) * length_k
-                        item_4 = item_4 + (D_CAF / Delta_r) * c_caf_out * length_k
+                        item_4 = item_4 + (D_CAF / Delta_r) * (c_caf_out - gk) * length_k
                         item_5 = item_5 - (D_CAF / Delta_r) * length_k / 3.0
             temp[i] = ((item_2 + item_1 + item_4) * DT + control_area[i] * caf[i]) / (
                     control_area[i] - (item_3 + item_5) * DT)

@@ -1,6 +1,6 @@
 import numpy as np
 
-grid_file_name = "../config/open/open_grid_coordinates.csv"
+open_grid_file_name = "../config/open/open_grid_coordinates.csv"
 neighbors_file_name = "../config/open/open_neighbor.csv"
 coefficient_file_name = "../config/open/coefficient.csv"
 

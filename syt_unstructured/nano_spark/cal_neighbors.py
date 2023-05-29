@@ -3,7 +3,7 @@ from open_parameters import *
 
 
 def open_neighbor():
-    grid_coordinates = np.loadtxt(grid_file_name, delimiter=",")
+    grid_coordinates = np.loadtxt(open_grid_file_name, delimiter=",")
     point_count = len(grid_coordinates)
     # 上下外内
     neighbors = np.empty((point_count, 4))

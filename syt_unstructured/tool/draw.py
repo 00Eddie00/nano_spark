@@ -7,8 +7,8 @@ plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 
 #  画折线图
-def plotter(xx, yy, name,dir_name, file_name):
-    path = dir_name + file_name
+def plotter(xx, yy, name, dir_path, file_name):
+    path = dir_path + file_name
     # plt.figure(dpi=300, figsize=(4, 4))  # 创建图形窗口
     plt.plot(xx, yy, ls='-', lw=2)
 
@@ -30,30 +30,29 @@ def plotter(xx, yy, name,dir_name, file_name):
     # plt.legend(loc=0)
 
     plt.grid()  # 添加网格
-    plt.savefig(dir_name + name + '均值' + '.png')
+    plt.savefig(dir_path + name + '均值' + '.png')
     plt.show()
 
 
-def get_xy(dir_name, file_name, name_arr):
-    path = dir_name + file_name
+def get_xy(dir_path, file_name, dir_name):
+    path = dir_path + file_name
     nano_avg = np.loadtxt(path)
-    l = len(name_arr)
-    avg = nano_avg[:, :l]
     # x轴坐标
-    xx = np.arange(len(avg))
-    for i in range(0, l):
-        # y轴坐标
-        yy = avg[:, i]
-        name = name_arr[i]
-        plotter(xx, yy, name,dir_name, file_name)
+    xx = np.arange(len(nano_avg))
+    # y轴坐标
+    yy = nano_avg
+    plotter(xx, yy, dir_name, dir_path, file_name)
+
 
 
 
 def main():
-    dir_name = "../result/NANO/nano_avg/"
-    file_name = "avg.dat"
-    name_arr = ["ca", "cag", "caf"]
-    get_xy(dir_name, file_name, name_arr)
+    dirnames = ["Ca", "CaF", "CaG"]
+    dir_path = "../result/AVG/"
+    for dir_name in dirnames:
+        file_name = f"{dir_name}_avg.csv"
+        get_xy(dir_path, file_name, dir_name)
+
     print("plotterfn 执行结束")
 
 

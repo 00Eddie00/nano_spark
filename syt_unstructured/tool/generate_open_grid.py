@@ -38,7 +38,7 @@ def meshing():
         axis=1)
     # 得到整个网格的点坐标
     grid_coordinates = np.concatenate((open_coordinates, new_open_coordinates))
-    np.savetxt(grid_file_name, grid_coordinates, fmt='%.1f', delimiter=",")
+    np.savetxt(open_grid_file_name, grid_coordinates, fmt='%.1f', delimiter=",")
 
 
 if __name__ == "__main__":
