@@ -40,7 +40,7 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                                                                                                               cab3,
                                                                                                               cab4)
     # 计算三角形系数
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
         nano_grid_file_name, nod_file_name)
 
     # 上一次迭代得到的值
@@ -110,7 +110,7 @@ def nano_calculation_g2(f, caf, c_caf_out):
     j_fdye = np.zeros(NP)
     for i in range(0, NP):
         j_fdye[i] = -K_F3_PLUS * f[i] * (F3_T - caf[i]) + K_F3_MINUS * caf[i]
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
         nano_grid_file_name, nod_file_name)
 
     last = np.zeros(NP)

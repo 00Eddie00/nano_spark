@@ -8,11 +8,11 @@ import numpy as np
 def cal_avg():
     grid_file_name = "../config/nano/4RYRgridt.dat"
     nod_file_name = "../config/nano/4RYRnod.dat"
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
         grid_file_name, nod_file_name)
     path = "../result/"
     dir_nano = "NANO/"
-    dir_avg = "AVG/"
+    dir_avg = "AVG1/"
     dirnames = ["Ca", "CaF", "CaG"]
     for dirname in dirnames:
         # 初始化各点Ca浓度

@@ -6,7 +6,7 @@ from tool.tool_mkdir import *
 import os
 
 
-def nano_spark(is_continue,total_steps):
+def nano_spark(is_continue, total_steps):
     # ryr通道开放时间对应的步数
     release_step = int(RELEASE_TIME / DT)
     grid_coordinates = np.loadtxt(open_grid_file_name, delimiter=",")  # 点坐标
@@ -27,10 +27,10 @@ def nano_spark(is_continue,total_steps):
     open_c_caf_prefix = f"{dir_name}/OPEN/CaF/CaF"
     open_c_cab_prefix = f"{dir_name}/OPEN/CaB/CaB"
     # 从0开始
-    current_step=1
+    current_step = 1
     if is_continue:
         path = "../result/"
-        dir_nano="NANO/"
+        dir_nano = "NANO/"
         dir_open = "OPEN/"
         dirnames = ["Ca", "CaB", "CaF", "CaG"]
         # 初始化各点Ca浓度
@@ -88,7 +88,7 @@ def nano_spark(is_continue,total_steps):
 
         # 初始化各点Troponin C浓度
         INITIAL_H2 = K_TroponinC_PLUS * INITIAL_C_CA * TroponinC_T / (
-                    K_TroponinC_PLUS * INITIAL_C_CA + K_TroponinC_MINUS)
+                K_TroponinC_PLUS * INITIAL_C_CA + K_TroponinC_MINUS)
         nano_cab2 = np.full(NP, INITIAL_H2)
         open_cab2 = np.full(point_count, INITIAL_H2)
 
@@ -246,4 +246,4 @@ def nano_spark(is_continue,total_steps):
 if __name__ == '__main__':
     is_continue = True
     total_steps = 20000
-    nano_spark(is_continue,total_steps)
+    nano_spark(is_continue, total_steps)

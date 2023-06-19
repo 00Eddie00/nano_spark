@@ -48,7 +48,7 @@ def get_xy(dir_path, file_name, dir_name):
 
 def main():
     dirnames = ["Ca", "CaF", "CaG"]
-    dir_path = "../result/AVG/"
+    dir_path = "../result/AVG1/"
     for dir_name in dirnames:
         file_name = f"{dir_name}_avg.csv"
         get_xy(dir_path, file_name, dir_name)

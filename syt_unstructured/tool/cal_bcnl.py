@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # 计算每个三角形的系数b c n L
 def cal_elements(grid_file_name, nod_file_name):
     grid = np.loadtxt(grid_file_name, dtype=np.float64)
@@ -20,6 +21,9 @@ def cal_elements(grid_file_name, nod_file_name):
 
     # niy*l
     niy_multiply_l = np.zeros([NE, 3], float)
+
+    # ai
+    a_arr = np.zeros([NE, 3], float)
 
     # bi
     b_arr = np.zeros([NE, 3], float)
@@ -62,9 +66,10 @@ def cal_elements(grid_file_name, nod_file_name):
             nod3 = nod[j, (k + 2) % 3]
             nix_multiply_l[j, k] = grid[nod2, 1] - grid[nod3, 1]
             niy_multiply_l[j, k] = grid[nod3, 0] - grid[nod2, 0]
+            a_arr[j, k] = (grid[nod3, 0] * grid[nod2, 1] - grid[nod2, 0] * grid[nod3, 1]) / (2 * single_area[j])
             b_arr[j, k] = (grid[nod3, 1] - grid[nod2, 1]) / (2 * single_area[j])
             c_arr[j, k] = (grid[nod2, 0] - grid[nod3, 0]) / (2 * single_area[j])
-    return single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area
+    return single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area
 
 
 # 判断三角形类型
@@ -90,7 +95,7 @@ def cal_length(boundary, grid):
 
 # 计算各个点平均值
 def cal_avg(concentration, grid_file_name, nod_file_name):
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
         grid_file_name, nod_file_name)
     total = 0.0
     NP = len(concentration)
@@ -120,9 +125,9 @@ def main():
     npoch = np.loadtxt(npoch_file_name, dtype=int)
     grid = np.loadtxt(grid_file_name, dtype=np.float64)
     nod = np.loadtxt(nod_file_name, dtype=int) - 1
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, b_arr, c_arr, nmax, total_area = cal_elements(
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
         grid_file_name, nod_file_name)
-    in_boundary, out_boundary, inner=judge_point(5, nod, npoch)
+    in_boundary, out_boundary, inner = judge_point(5, nod, npoch)
     print(in_boundary)
     print(out_boundary)
     print(inner)

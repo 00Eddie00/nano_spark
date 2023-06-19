@@ -61,8 +61,10 @@ def open_calculation_f(f, caf, cab1, cab2, cab3, cab4):
     coefficients = np.load("../config/open/coefficient.npy")
     point_count = len(grid_coordinates)
     last = np.copy(f)
+    # last = np.zeros(point_count)
     temp = np.copy(f)
     for i in range(0, 10):
+        # last[:3] = f[:3]
         # 不计算边界点
         for j in range(3, point_count):
             j_buffers = j_1[j] + j_2[j] + j_3[j] + j_4[j]
@@ -89,11 +91,13 @@ def open_calculation_caf(f, caf):
     coefficients = np.load("../config/open/coefficient.npy")
     point_count = len(grid_coordinates)
     last = np.copy(caf)
+    # last = np.zeros(point_count)
     temp = np.copy(caf)
     j_fdye = np.zeros(point_count)
     for j in range(0, point_count):
         j_fdye[j] = -K_F3_PLUS * f[j] * (F3_T - caf[j]) + K_F3_MINUS * caf[j]
     for i in range(0, 10):
+        # last[:3]=caf[:3]
         for j in range(3, point_count):
             p32, p12, p23, p21 = neighbors[j][0], neighbors[j][1], neighbors[j][2], neighbors[j][3]
             coe1, coe2, coe3, coe4 = coefficients[j][0], coefficients[j][1], coefficients[j][2], coefficients[j][3]
