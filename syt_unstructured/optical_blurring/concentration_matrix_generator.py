@@ -9,6 +9,7 @@ def convolve3d(original_matrix, kernel, xy_c_val, z_c_val):
     matrix = original_matrix.copy()
     c_val = xy_c_val
     i = 0
+    print("convolve3d开始")
     for kernel_i in kernel:
         if i == 2:
             c_val = z_c_val
@@ -21,8 +22,11 @@ def convolve3d(original_matrix, kernel, xy_c_val, z_c_val):
 
 def process_concentration(original_concentration, c_val):
     concentration = np.full((601, 601, 16), c_val, dtype=float)
-    nods = np.loadtxt(nod_file_name) - 1
+    nods = np.loadtxt(nod_file_name, dtype=int) - 1
     relations = np.load("../optical_blurring/refined_relations.npy")
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
+        nano_grid_file_name, nod_file_name)
+    print("process_concentration开始")
     for i in range(601):
         for j in range(601):
             x = i - 300
@@ -32,8 +36,6 @@ def process_concentration(original_concentration, c_val):
             if relation == 1:
                 concentration[i, j, :] = original_concentration[c_id]
             elif relation == 2:
-                single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
-                    nano_grid_file_name, nod_file_name)
                 approximate_concentration = 0
                 for k in range(3):
                     nod_k = nods[c_id, k]

@@ -15,6 +15,7 @@ def spatial_distribution(dirname, nums, kernel, xy_c_val, z_c_val):
 
 # 荧光染料卷积后时间分布
 def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
+    print("temporal_distribution开始")
     path = "../result/NANO/"
     # 初始化各点Ca浓度
     filenames = os.listdir(f"{path}{dirname}/")  # 目前所有步数的浓度文件
@@ -25,8 +26,9 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
     # 哪个文件，该文件取两个点 (0, 0) (300, 0)
     position_con = np.empty((fluo_dir_list_len, position_list_len))
     # 文件数，每隔十个文件计算一次
-    for fluo_file_index in range(0, fluo_dir_list_len, 10):
+    for fluo_file_index in range(0, fluo_dir_list_len):
         filename = filenames[fluo_file_index]
+        print(f"{filename}开始")
         nano_c = np.loadtxt(f"{path}{dirname}/{filename}")
         processed_con_matrix = process_concentration(nano_c, xy_c_val)
         matrix = convolve3d(processed_con_matrix, kernel, xy_c_val, z_c_val)
@@ -35,6 +37,7 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
             i = position_list[position_index][0] + 300  # x:0+300/300+300
             j = position_list[position_index][1] + 300  # y:0+300/0+300
             position_con[fluo_file_index, position_index] = matrix[i, j, 15]
+        print(f"{filename}结束")
     return position_con
 
 
