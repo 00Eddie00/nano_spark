@@ -64,11 +64,16 @@ def cal_elements(grid_file_name, nod_file_name):
             # 当前点对应的那条边的b c n*l
             nod2 = nod[j, (k + 1) % 3]
             nod3 = nod[j, (k + 2) % 3]
-            nix_multiply_l[j, k] = grid[nod2, 1] - grid[nod3, 1]
-            niy_multiply_l[j, k] = grid[nod3, 0] - grid[nod2, 0]
-            a_arr[j, k] = (grid[nod3, 0] * grid[nod2, 1] - grid[nod2, 0] * grid[nod3, 1]) / (2 * single_area[j])
-            b_arr[j, k] = (grid[nod3, 1] - grid[nod2, 1]) / (2 * single_area[j])
-            c_arr[j, k] = (grid[nod2, 0] - grid[nod3, 0]) / (2 * single_area[j])
+            # nix_multiply_l[j, k] = grid[nod2, 1] - grid[nod3, 1]
+            # niy_multiply_l[j, k] = grid[nod3, 0] - grid[nod2, 0]
+            # a_arr[j, k] = (grid[nod3, 0] * grid[nod2, 1] - grid[nod2, 0] * grid[nod3, 1]) / (2 * single_area[j])
+            # b_arr[j, k] = (grid[nod3, 1] - grid[nod2, 1]) / (2 * single_area[j])
+            # c_arr[j, k] = (grid[nod2, 0] - grid[nod3, 0]) / (2 * single_area[j])
+            nix_multiply_l[j, k] = grid[nod3, 1] - grid[nod2, 1]
+            niy_multiply_l[j, k] = grid[nod2, 0] - grid[nod3, 0]
+            a_arr[j, k] = (grid[nod2, 0] * grid[nod3, 1] - grid[nod3, 0] * grid[nod2, 1]) / (2 * single_area[j])
+            b_arr[j, k] = (grid[nod2, 1] - grid[nod3, 1]) / (2 * single_area[j])
+            c_arr[j, k] = (grid[nod3, 0] - grid[nod2, 0]) / (2 * single_area[j])
     return single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area
 
 

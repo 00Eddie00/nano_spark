@@ -10,7 +10,7 @@ def nano_spark(is_continue, total_steps):
     # ryr通道开放时间对应的步数
     release_step = int(RELEASE_TIME / DT)
     grid_coordinates = np.loadtxt(open_grid_file_name, delimiter=",")  # 点坐标
-    out_boundary_length = cal_out_boundary_length(grid)
+    out_boundary_length = cal_out_boundary_length(grids)
     # 点个数
     point_count = len(grid_coordinates)
     # 纳米入流处仍然固定

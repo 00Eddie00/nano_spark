@@ -25,7 +25,6 @@ def generate_kernel():
 def main():
     kernel = generate_kernel()
     np.save("kernel_v1", kernel)
-    # print(kernel)
 
 
 if __name__ == "__main__":

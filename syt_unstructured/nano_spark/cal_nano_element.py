@@ -62,9 +62,9 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                     point2 = (point_index + 1) % 3
                     point3 = (point_index + 2) % 3
                     # 该点所对应的边的两点
-                    nod2 = nod[near_triangle_index, point2]
-                    nod3 = nod[near_triangle_index, point3]
-                    in_boundary, out_boundary, inner = judge_point(near_triangle_index, nod, npoch)
+                    nod2 = nods[near_triangle_index, point2]
+                    nod3 = nods[near_triangle_index, point3]
+                    in_boundary, out_boundary, inner = judge_point(near_triangle_index, nods, npoch)
 
                     # 求导部分的项没有边界边
                     if npoch[nod2] == B_INNER or npoch[nod3] == B_INNER:
@@ -89,11 +89,11 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                         f2jk, f3jk = last[nod2], last[nod3]
                     fjk = (f2jk + f3jk) / 3.0
                     if len(in_boundary) == 2 and k_ryr != 0:
-                        length_j = cal_length(in_boundary, grid)
+                        length_j = cal_length(in_boundary, grids)
                         item_4 = item_4 + k_ryr * (ca_jsr - fjk) * length_j
                         item_5 = item_5 - k_ryr * length_j / 3.0
                     elif len(out_boundary) == 2:
-                        length_k = cal_length(out_boundary, grid)
+                        length_k = cal_length(out_boundary, grids)
                         item_6 = item_6 + (D_CA / Delta_r) * (c_ca_out - fjk) * length_k
                         item_7 = item_7 - (D_CA / Delta_r) * length_k / 3.0
 
@@ -128,9 +128,9 @@ def nano_calculation_g2(f, caf, c_caf_out):
                     point_index = index_in_triangle[i, k]
                     point2 = (point_index + 1) % 3
                     point3 = (point_index + 2) % 3
-                    nod2 = nod[near_triangle_index, point2]
-                    nod3 = nod[near_triangle_index, point3]
-                    in_boundary, out_boundary, inner = judge_point(near_triangle_index, nod, npoch)
+                    nod2 = nods[near_triangle_index, point2]
+                    nod3 = nods[near_triangle_index, point3]
+                    in_boundary, out_boundary, inner = judge_point(near_triangle_index, nods, npoch)
                     if npoch[nod2] == B_INNER or npoch[nod3] == B_INNER:
                         g2i, g3i = caf[nod2], caf[nod3]
                         if j != 0:
@@ -149,7 +149,7 @@ def nano_calculation_g2(f, caf, c_caf_out):
                         g2k, g3k = last[nod2], last[nod3]
                     gk = (g2k + g3k) / 3.0
                     if len(out_boundary) == 2:
-                        length_k = cal_length(out_boundary, grid)
+                        length_k = cal_length(out_boundary, grids)
                         item_4 = item_4 + (D_CAF / Delta_r) * (c_caf_out - gk) * length_k
                         item_5 = item_5 - (D_CAF / Delta_r) * length_k / 3.0
             temp[i] = ((item_2 + item_1 + item_4) * DT + control_area[i] * caf[i]) / (

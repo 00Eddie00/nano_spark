@@ -20,6 +20,26 @@ def convolve3d(original_matrix, kernel, xy_c_val, z_c_val):
     return matrix
 
 
+# 三维卷积
+# def convolve3d(original_matrix, kernel, xy_c_val, z_c_val):
+#     matrix = original_matrix.copy()
+#     # 第一维
+#     for i in np.arange(matrix.shape[1]):
+#         for j in np.arange(matrix.shape[2]):
+#             one_line = matrix[:, i, j]
+#             matrix[:, i, j] = convolve1d(one_line, kernel[0], mode='constant', cval=xy_c_val)
+#     # 第二维
+#     for i in np.arange(matrix.shape[0]):
+#         for j in np.arange(matrix.shape[2]):
+#             one_line = matrix[i, :, j]
+#             matrix[i, :, j] = convolve1d(one_line, kernel[1], mode='constant', cval=xy_c_val)
+#     # 第三维
+#     for i in np.arange(matrix.shape[0]):
+#         for j in np.arange(matrix.shape[1]):
+#             one_line = matrix[i, j, :]
+#             matrix[i, j, :] = convolve1d(one_line, kernel[2], mode='constant', cval=z_c_val)
+#     return matrix
+
 def process_concentration(original_concentration, c_val):
     concentration = np.full((601, 601, 16), c_val, dtype=float)
     nods = np.loadtxt(nod_file_name, dtype=int) - 1
@@ -36,8 +56,8 @@ def process_concentration(original_concentration, c_val):
             if relation == 1:
                 concentration[i, j, :] = original_concentration[c_id]
             elif relation == 2:
-                approximate_concentration = 0
-                for k in range(3):
+                approximate_concentration = 0.0
+                for k in range(0, 3):
                     nod_k = nods[c_id, k]
                     f_k = original_concentration[nod_k]
                     a_k = a_arr[c_id, k]
