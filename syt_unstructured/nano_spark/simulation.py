@@ -1,7 +1,7 @@
 from cal_nano_element import *
-from cal_open_elements import *
+from nano_spark.open.cal_open_elements import *
 from nano_parameters import *
-from open_parameters import open_grid_file_name
+from nano_spark.open.open_parameters import open_grid_file_name
 from tool.tool_mkdir import *
 import os
 

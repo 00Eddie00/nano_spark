@@ -1,8 +1,8 @@
 import numpy as np
 
-open_grid_file_name = "../config/open/open_grid_coordinates.csv"
-neighbors_file_name = "../config/open/open_neighbor.csv"
-coefficient_file_name = "../config/open/coefficient.csv"
+open_grid_file_name = "../../config/open/open_grid_coordinates.csv"
+neighbors_file_name = "../../config/open/open_neighbor.csv"
+coefficient_file_name = "../../config/open/coefficient.csv"
 
 # 亚空间与大开放空间交界点
 boundary_r = 300

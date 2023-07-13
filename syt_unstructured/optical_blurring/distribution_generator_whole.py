@@ -17,26 +17,39 @@ def spatial_distribution(dirname, nums, kernel, xy_c_val, z_c_val):
 # 荧光染料卷积后时间分布
 def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
     print("temporal_distribution开始")
-    path = "../result/NANO/"
+    nano_path = "../result/NANO/"
+    open_path = "../result/OPEN/"
     # 初始化各点Ca浓度
-    filenames = os.listdir(f"{path}{dirname}/")  # 目前所有步数的浓度文件
-    fluo_dir_list_len = len(filenames)  # 当前生成文件数
+    nano_filenames = os.listdir(f"{nano_path}{dirname}/")  # 纳米空间目前所有步数的浓度文件
+    open_filenames = os.listdir(f"{open_path}{dirname}/")  # 纳米空间目前所有步数的浓度文件
+    fluo_dir_list_len = len(nano_filenames)  # 当前生成文件数
     position_list_len = len(position_list)
-    # 哪个文件，该文件取两个点 (0, 0) (300, 0)
+    # 哪个文件，该文件取四个点 [[0, 0], [100, 0], [300, 0], [400, 0]]
     position_con = np.empty((position_list_len, fluo_dir_list_len))
     # 文件数，每隔10个（或100个）文件计算一次
     for fluo_file_index in range(fluo_dir_list_len):
-        filename = filenames[fluo_file_index]
-        print(f"{filename}开始")
-        nano_c = np.loadtxt(f"{path}{dirname}/{filename}")
-        processed_con_matrix = nano_process_concentration(nano_c, xy_c_val)
+        nano_file = nano_filenames[fluo_file_index]
+        open_file = open_filenames[fluo_file_index]
+        print(f"{nano_file}{open_file}开始")
+        nano_c = np.loadtxt(f"{nano_path}{dirname}/{nano_file}")
+        open_c = np.loadtxt(f"{open_path}{dirname}/{open_file}")
+        processed_con_matrix = process_concentration(nano_c, open_c, xy_c_val)
         matrix = convolve3d(processed_con_matrix, kernel, xy_c_val, z_c_val)
-        # 2
+        # 4
         for position_index in range(position_list_len):
-            i = position_list[position_index][0] + 300  # x:0+300/300+300
-            j = position_list[position_index][1] + 300  # y:0+300/0+300
-            position_con[position_index, fluo_file_index] = matrix[i, j, 15]
-        print(f"{filename}结束")
+            a = position_list[position_index][0]
+            b = position_list[position_index][1]
+            i = a + 500  # x:0+300/300+300
+            j = b + 500  # y:0+300/0+300
+            # 在纳米空间
+            if np.sqrt(a ** 2 + b ** 2) <= 300:
+
+                position_con[position_index, fluo_file_index] = matrix[i, j, 15]
+            # 在开放空间
+            else:
+                position_con[position_index, fluo_file_index] = matrix[i, j, 500]
+
+        print(f"{nano_file}{open_file}结束")
     return position_con
 
 
@@ -44,6 +57,7 @@ def optical_blurring(dirname, position_list):
     kernel = np.load("../optical_blurring/kernel_v1.npy", allow_pickle=True)
     result_set = "../result/NANO"
     # C_VAL = 0.0
+    # 开放空间中没有
     if dirname == "CaG":
         C_VAL = 0.0  # 用于纳米钙火花
     elif dirname == "CaF":
@@ -62,7 +76,7 @@ def optical_blurring(dirname, position_list):
 
 def main():
     dirname = "CaF"
-    my_position_list = [[0, 0], [300, 0]]
+    my_position_list = [[0, 0], [100, 0], [300, 0], [400, 0]]
     optical_blurring(dirname, my_position_list)
 
 

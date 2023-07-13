@@ -20,7 +20,8 @@ def cal_temporal_properties(ampl, time_interval):
 
 def temporal_plotter(temporal_path, time_interval, save=False):
     temporal_fluorescence = np.loadtxt(temporal_path)
-    ampl = temporal_fluorescence / temporal_fluorescence[0] - 1  # 振幅，即荧光强度：fluorescence intensity
+    # ampl = temporal_fluorescence / temporal_fluorescence[0] - 1  # 振幅，即荧光强度：fluorescence intensity
+    ampl = temporal_fluorescence / temporal_fluorescence[0]  # 振幅，即荧光强度（直接用浓度）：fluorescence intensity
     t = [i * time_interval for i in range(len(temporal_fluorescence))]  # 时间间隔，单位ms
     peak_value, t_rise, t50, fdhm, fdhm_start = cal_temporal_properties(ampl, time_interval)  # 计算钙火花的各属性
 
@@ -43,7 +44,9 @@ def temporal_plotter(temporal_path, time_interval, save=False):
     plt.text(0, 0, f'FDHM={np.round(fdhm, 4)}ms', fontsize=12)
 
     plt.xlabel('t(ms)', fontsize=14)
-    plt.ylabel('ΔF/F0', fontsize=14)
+    # plt.ylabel('ΔF/F0', fontsize=14)
+    # 直接用浓度
+    plt.ylabel('F/F0', fontsize=14)
     plt.suptitle('中心：时间分布')
     file_without_extension = os.path.splitext(temporal_path)[0]
     plt.title(f"数据来源：{file_without_extension}")

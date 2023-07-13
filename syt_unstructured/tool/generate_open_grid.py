@@ -1,5 +1,4 @@
-import numpy as np
-from nano_spark.open_parameters import *
+from nano_spark.open.open_parameters import *
 
 def point_scatter(start, end, base, k=1, positive=True):
     result = [start]

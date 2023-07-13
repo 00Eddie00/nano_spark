@@ -1,5 +1,5 @@
 from open_parameters import *
-from nano_parameters import *
+from nano_spark.nano_parameters import *
 import numpy as np
 
 
@@ -58,7 +58,7 @@ def open_calculation_f(f, caf, cab1, cab2, cab3, cab4):
     neighbors = np.loadtxt(neighbors_file_name, int, delimiter=",")  # 邻点
     # coefficients = np.loadtxt(coefficient_file_name, delimiter=",")*2  # 系数
     # coefficients = np.load("../config/open/coefficient.npy") * 2
-    coefficients = np.load("../config/open/coefficient.npy")
+    coefficients = np.load("../../config/open/coefficient.npy")
     point_count = len(grid_coordinates)
     last = np.copy(f)
     # last = np.zeros(point_count)
@@ -88,7 +88,7 @@ def open_calculation_caf(f, caf):
     neighbors = np.loadtxt(neighbors_file_name, int, delimiter=",")  # 邻点
     # coefficients = np.loadtxt(coefficient_file_name, delimiter=",")*2  # 系数
     # coefficients = np.load("../config/open/coefficient.npy") * 2
-    coefficients = np.load("../config/open/coefficient.npy")
+    coefficients = np.load("../../config/open/coefficient.npy")
     point_count = len(grid_coordinates)
     last = np.copy(caf)
     # last = np.zeros(point_count)
