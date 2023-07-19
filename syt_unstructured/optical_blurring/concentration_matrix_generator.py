@@ -90,26 +90,31 @@ def interpolation_calculation(lower_r, upper_r, lower_z, upper_z, radius, height
     return interpolated_value
 
 
-def open_process_concentration(original_concentration, c_val):
+def open_process_concentration(original_concentration, c_val, position_list_i):
     grid_coordinates = np.loadtxt("../config/open/open_grid_coordinates.csv", delimiter=",")
-    grids_rz = np.load("grids_rz.npy")
-    points_rz = np.load("points_rz.npy")
-
-    xy_start = -500
+    grids_rz = np.load(f"grids_rz_v2_({position_list_i[0]},{position_list_i[1]}).npy")
+    points_rz = np.load(f"points_rz_v2_({position_list_i[0]},{position_list_i[1]}).npy")
+    dis = position_list_i[0]  # 0,100,300,400
+    x_start = dis - 500
+    y_start = -500
     z_start = -500
-    xy_end = 500
+    x_end = dis + 500
+    y_end = 500
     z_end = 500
     # 每隔1nm取一个点
     interval = 1
-    d1, d2, d3 = (xy_end - xy_start) // interval + 1, (xy_end - xy_start) // interval + 1, (
+    d1, d2, d3 = (x_end - x_start) // interval + 1, (y_end - y_start) // interval + 1, (
             z_end - z_start) // interval + 1  # 1001 1001 1001
     concentration = np.full((d1, d2, d3), dtype=float, fill_value=c_val)  # 1001 1001 1001
     for i in range(d1):
+        a = np.abs(i - (500 - dis))
         for j in range(d2):
+            b = np.abs(j - 500)
             for k in range(d3):
-                lower_r, upper_r, lower_z, upper_z = grids_rz[i, j, k]
+                c = np.abs(k - 500)
+                lower_r, upper_r, lower_z, upper_z = grids_rz[a, b, c]
                 if lower_r != -1.0 and upper_r != -1.0 and lower_z != -1.0 and upper_z != -1.0:
-                    radius, height = points_rz[i, j, k]
+                    radius, height = points_rz[a, b, c]
                     # 对浓进行插值计算
                     concentration[i, j, k] = interpolation_calculation(lower_r, upper_r, lower_z, upper_z, radius,
                                                                        height,
@@ -118,38 +123,44 @@ def open_process_concentration(original_concentration, c_val):
     return concentration
 
 
-def process_concentration(nano_original_concentration, open_original_concentration, c_val):
-    points_rz = np.load("points_rz.npy")
+def process_concentration(nano_original_concentration, open_original_concentration, c_val, position_list_i):
+    # points_rz = np.load(f"points_rz_v2_({position_list_i[0]},{position_list_i[1]}).npy")
     nano_concentration = nano_process_concentration(nano_original_concentration, c_val)
-    open_concentration = open_process_concentration(open_original_concentration, c_val)
-
-    xy_start = -500
+    open_concentration = open_process_concentration(open_original_concentration, c_val, position_list_i)
+    dis = position_list_i[0]  # 0,100,300,400
+    x_start = dis - 500
+    y_start = -500
     z_start = -500
-    xy_end = 500
+    x_end = dis + 500
+    y_end = 500
     z_end = 500
     # 每隔1nm取一个点
     interval = 1
-    d1, d2, d3 = (xy_end - xy_start) // interval + 1, (xy_end - xy_start) // interval + 1, (
+    d1, d2, d3 = (x_end - x_start) // interval + 1, (y_end - y_start) // interval + 1, (
             z_end - z_start) // interval + 1  # 1001 1001 1001
     concentration = np.full((d1, d2, d3), dtype=float, fill_value=c_val)  # 1001 1001 1001
 
-    xy_arange = np.arange(xy_start, xy_end + 1)  # -500,501
-    xy_squared = np.square(xy_arange)
-    z_arange = np.abs(np.arange(z_start, z_end + 1))  # -500,501
+    interval = 1
+    x_arange = np.arange(x_start, x_end + 1, interval)
+    y_arange = np.arange(y_start, y_end + 1, interval)  # -500,501
+    z_arange = np.arange(z_start, z_end + 1, interval)
+    x_squared = np.square(x_arange)
+    y_squared = np.square(y_arange)
+    z_arange_abs = np.abs(z_arange)  # -500,501
 
     for i in range(d1):
-        x = xy_arange[i]
-        x2 = xy_squared[i]
+        x = x_arange[i]
+        x2 = x_squared[i]
         for j in range(d2):
-            y = xy_arange[j]
-            y2 = xy_squared[j]
+            y = y_arange[j]
+            y2 = y_squared[j]
             radius = np.sqrt(x2 + y2)
             for k in range(d3):
-                height = z_arange[k]
+                height = z_arange_abs[k]
                 # 点在开放空间中
                 if height >= 7.5 or radius >= 300:
-                    a, b, c = find_multiple_dimensions_index(points_rz, [radius, height])
-                    concentration[i, j, k] = open_concentration[a, b, c]
+                    # a, b, c = find_multiple_dimensions_index(points_rz, [radius, height])
+                    concentration[i, j, k] = open_concentration[i, j, k]
                 # 点在纳米空间中
                 else:
                     concentration[i, j, k] = nano_concentration[x + 300, y + 300, height]

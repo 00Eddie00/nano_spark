@@ -15,9 +15,9 @@ def spatial_distribution(dirname, nums, kernel, xy_c_val, z_c_val):
 
 
 # 荧光染料卷积后时间分布
-def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
+def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list, multiple):
     print("temporal_distribution开始")
-    path = "../result/NANO/"
+    path = "../result/NANO2/"
     # 初始化各点Ca浓度
     filenames = os.listdir(f"{path}{dirname}/")  # 目前所有步数的浓度文件
     fluo_dir_list_len = len(filenames)  # 当前生成文件数
@@ -25,7 +25,7 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
     # 哪个文件，该文件取两个点 (0, 0) (300, 0)
     position_con = np.empty((position_list_len, fluo_dir_list_len))
     # 文件数，每隔10个（或100个）文件计算一次
-    for fluo_file_index in range(fluo_dir_list_len):
+    for fluo_file_index in range(0, fluo_dir_list_len, multiple):
         filename = filenames[fluo_file_index]
         print(f"{filename}开始")
         nano_c = np.loadtxt(f"{path}{dirname}/{filename}")
@@ -42,7 +42,7 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
 
 def optical_blurring(dirname, position_list):
     kernel = np.load("../optical_blurring/kernel_v1.npy", allow_pickle=True)
-    result_set = "../result/NANO"
+    result_set = "../result/NANO2"
     # C_VAL = 0.0
     if dirname == "CaG":
         C_VAL = 0.0  # 用于纳米钙火花
@@ -51,7 +51,7 @@ def optical_blurring(dirname, position_list):
     xy_c_val = C_VAL
     z_c_val = C_VAL
     multiple = 100
-    position_con = temporal_distribution(dirname, kernel, xy_c_val, 0, position_list)
+    position_con = temporal_distribution(dirname, kernel, xy_c_val, 0, position_list, multiple)
     new_position_con = shrink_files(position_con, multiple)
     # 2
     for position_index in range(len(new_position_con)):
@@ -61,7 +61,7 @@ def optical_blurring(dirname, position_list):
 
 
 def main():
-    dirname = "CaF"
+    dirname = "CaG"
     my_position_list = [[0, 0], [300, 0]]
     optical_blurring(dirname, my_position_list)
 

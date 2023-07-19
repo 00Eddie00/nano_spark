@@ -1,6 +1,6 @@
 import numpy as np
 from nano_spark.open.open_parameters import *
-from shapely.geometry import Point, Polygon, LineString, MultiPolygon
+from shapely.geometry import Point, Polygon
 from tool.generate_open_grid import point_scatter
 
 
@@ -114,37 +114,43 @@ def open_judge_relation():
     new_open_r = np.flipud(point_scatter(295, 0, 5, k=2, positive=False))
     r = np.concatenate((new_open_r, open_r))
     z = np.copy(open_z)
-    # 因为只取到距离中心点400nm（0，400）处，且浓度体积为1立方微米，所以r:-500~500，z:-500~500
-    xy_start = 0
-    z_start = 0
-    xy_end = 500
-    z_end = 500
-    # 每隔1nm取一个点
-    interval = 1
-    x_squared = np.square(np.arange(xy_start, xy_end + 1, interval))
-    y_squared = np.square(np.arange(xy_start, xy_end + 1, interval))
-    z_arange = np.arange(z_start, z_end + 1, interval)
-    d1, d2, d3 = (xy_end - xy_start) // interval + 1, (xy_end - xy_start) // interval + 1, (
-            z_end - z_start) // interval + 1  # 501 501 501
-    grids_rz = np.full((d1, d2, d3, 4), dtype=float, fill_value=-1.0)
-    points_rz = np.full((d1, d2, d3, 2), dtype=float, fill_value=-1.0)
-    for i in range(d1):
-        x2 = x_squared[i]
-        print(f"{i}点开始")
-        for j in range(d2):
-            y2 = y_squared[j]
-            radius = np.sqrt(x2 + y2)
-            lower_r, upper_r = cal_pre_next(r, radius)
-            for k in range(d3):
-                height = z_arange[k]
-                if height >= 7.5 and radius >= 300:
-                    lower_z, upper_z = cal_pre_next(z, height)
-                    grids_rz[i, j, k] = lower_r, upper_r, lower_z, upper_z
-                    points_rz[i, j, k] = radius, height
-    np.save("grids_rz_v2", grids_rz)
-    np.save("points_rz_v2", points_rz)
-    print("grid_rz saved")
-    print("points_rz saved")
+    # (0,0)因为只取到距离中心点400nm（0，400）处，且浓度体积为1立方微米，所以r:-500~500，z:-500~500
+    # 总共要取[[0, 0], [100, 0], [300, 0], [400, 0]]
+    my_position_list = [[0, 0], [100, 0], [300, 0], [400, 0]]
+    for position_index in range(len(my_position_list)):
+        dis = my_position_list[position_index][0]  # 0,100,300,400
+        x_end = dis + 500
+        y_end = 500
+        z_end = 500
+        # 每隔1nm取一个点
+        interval = 1
+        x_squared = np.square(np.arange(0, x_end + 1, interval))
+        y_squared = np.square(np.arange(0, y_end + 1, interval))
+        z_arange = np.arange(0, z_end + 1, interval)
+        d1, d2, d3 = (x_end - 0) // interval + 1, (y_end - 0) // interval + 1, (
+                z_end - 0) // interval + 1  # 601 501 501
+        grids_rz = np.full((d1, d2, d3, 4), dtype=float, fill_value=-1.0)
+        points_rz = np.full((d1, d2, d3, 2), dtype=float, fill_value=-1.0)
+        for i in range(d1):
+            x2 = x_squared[i]
+            print(f"{i}点开始")
+            for j in range(d2):
+                y2 = y_squared[j]
+                radius = np.sqrt(x2 + y2)
+                lower_r, upper_r = cal_pre_next(r, radius)
+                for k in range(d3):
+                    height = z_arange[k]
+                    if height >= 7.5 or radius >= 300:
+                        lower_z, upper_z = cal_pre_next(z, height)
+                        grids_rz[i, j, k] = lower_r, upper_r, lower_z, upper_z
+                        points_rz[i, j, k] = radius, height
+        np.save(f"grids_rz_v2_({my_position_list[position_index][0]},{my_position_list[position_index][1]})", grids_rz)
+        np.save(f"points_rz_v2_({my_position_list[position_index][0]},{my_position_list[position_index][1]})",
+                points_rz)
+        del grids_rz
+        del points_rz
+        print(f"grid_rz_({my_position_list[position_index][0]},{my_position_list[position_index][1]}) saved")
+        print(f"points_rz_({my_position_list[position_index][0]},{my_position_list[position_index][1]}) saved")
 
 
 def main():

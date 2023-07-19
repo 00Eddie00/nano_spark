@@ -15,7 +15,7 @@ def spatial_distribution(dirname, nums, kernel, xy_c_val, z_c_val):
 
 
 # 荧光染料卷积后时间分布
-def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
+def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list, multiple):
     print("temporal_distribution开始")
     nano_path = "../result/NANO/"
     open_path = "../result/OPEN/"
@@ -27,28 +27,23 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list):
     # 哪个文件，该文件取四个点 [[0, 0], [100, 0], [300, 0], [400, 0]]
     position_con = np.empty((position_list_len, fluo_dir_list_len))
     # 文件数，每隔10个（或100个）文件计算一次
-    for fluo_file_index in range(fluo_dir_list_len):
+    for fluo_file_index in range(0, fluo_dir_list_len, multiple):
         nano_file = nano_filenames[fluo_file_index]
         open_file = open_filenames[fluo_file_index]
         print(f"{nano_file}{open_file}开始")
         nano_c = np.loadtxt(f"{nano_path}{dirname}/{nano_file}")
         open_c = np.loadtxt(f"{open_path}{dirname}/{open_file}")
-        processed_con_matrix = process_concentration(nano_c, open_c, xy_c_val)
-        matrix = convolve3d(processed_con_matrix, kernel, xy_c_val, z_c_val)
         # 4
         for position_index in range(position_list_len):
-            a = position_list[position_index][0]
-            b = position_list[position_index][1]
-            i = a + 500  # x:0+300/300+300
-            j = b + 500  # y:0+300/0+300
-            # 在纳米空间
-            if np.sqrt(a ** 2 + b ** 2) <= 300:
-
-                position_con[position_index, fluo_file_index] = matrix[i, j, 15]
-            # 在开放空间
-            else:
-                position_con[position_index, fluo_file_index] = matrix[i, j, 500]
-
+            processed_con_matrix = process_concentration(nano_c, open_c, xy_c_val, position_list[position_index])
+            matrix = convolve3d(processed_con_matrix, kernel, xy_c_val, z_c_val)
+            position_con[position_index, fluo_file_index] = matrix[500, 500, 500]
+            # # 在纳米空间
+            # if np.sqrt(a ** 2 + b ** 2) <= 300:
+            #     position_con[position_index, fluo_file_index] = matrix[i, j, 15]
+            # # 在开放空间
+            # else:
+            #     position_con[position_index, fluo_file_index] = matrix[i, j, 500]
         print(f"{nano_file}{open_file}结束")
     return position_con
 
@@ -65,13 +60,13 @@ def optical_blurring(dirname, position_list):
     xy_c_val = C_VAL
     z_c_val = C_VAL
     multiple = 100
-    position_con = temporal_distribution(dirname, kernel, xy_c_val, 0, position_list)
-    new_position_con = shrink_files(position_con, multiple)
+    position_con = temporal_distribution(dirname, kernel, xy_c_val, 0, position_list, multiple)
+    position_con = shrink_files(position_con, multiple)
     # 2
-    for position_index in range(len(new_position_con)):
+    for position_index in range(len(position_con)):
         np.savetxt(
             f"{result_set}/{dirname}_psf_({position_list[position_index][0]},{position_list[position_index][1]}).csv"
-            , new_position_con[position_index])
+            , position_con[position_index])
 
 
 def main():
