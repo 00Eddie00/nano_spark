@@ -95,7 +95,6 @@ def save_rectangle_list():
 
 def cal_pre_next(arr, coordinate):
     index = np.searchsorted(arr, coordinate)
-    lower, upper = -1.0, -1.0
     if index == 0:
         lower, upper = arr[index], arr[index + 1]
     elif index == len(arr):
@@ -116,7 +115,7 @@ def open_judge_relation():
     z = np.copy(open_z)
     # (0,0)因为只取到距离中心点400nm（0，400）处，且浓度体积为1立方微米，所以r:-500~500，z:-500~500
     # 总共要取[[0, 0], [100, 0], [300, 0], [400, 0]]
-    my_position_list = [[0, 0], [100, 0], [300, 0], [400, 0]]
+    my_position_list = [[400, 0]]
     for position_index in range(len(my_position_list)):
         dis = my_position_list[position_index][0]  # 0,100,300,400
         x_end = dis + 500
@@ -128,9 +127,9 @@ def open_judge_relation():
         y_squared = np.square(np.arange(0, y_end + 1, interval))
         z_arange = np.arange(0, z_end + 1, interval)
         d1, d2, d3 = (x_end - 0) // interval + 1, (y_end - 0) // interval + 1, (
-                z_end - 0) // interval + 1  # 601 501 501
-        grids_rz = np.full((d1, d2, d3, 4), dtype=float, fill_value=-1.0)
-        points_rz = np.full((d1, d2, d3, 2), dtype=float, fill_value=-1.0)
+                z_end - 0) // interval + 1  # 901 501 501
+        grids_rz = np.full((d1, d2, d3, 4), fill_value=-1.0)
+        points_rz = np.full((d1, d2, d3, 2), fill_value=-1.0)
         for i in range(d1):
             x2 = x_squared[i]
             print(f"{i}点开始")
@@ -144,11 +143,9 @@ def open_judge_relation():
                         lower_z, upper_z = cal_pre_next(z, height)
                         grids_rz[i, j, k] = lower_r, upper_r, lower_z, upper_z
                         points_rz[i, j, k] = radius, height
-        np.save(f"grids_rz_v2_({my_position_list[position_index][0]},{my_position_list[position_index][1]})", grids_rz)
-        np.save(f"points_rz_v2_({my_position_list[position_index][0]},{my_position_list[position_index][1]})",
+        np.save(f"grids_rz_v3_({my_position_list[position_index][0]},{my_position_list[position_index][1]})", grids_rz)
+        np.save(f"points_rz_v3_({my_position_list[position_index][0]},{my_position_list[position_index][1]})",
                 points_rz)
-        del grids_rz
-        del points_rz
         print(f"grid_rz_({my_position_list[position_index][0]},{my_position_list[position_index][1]}) saved")
         print(f"points_rz_({my_position_list[position_index][0]},{my_position_list[position_index][1]}) saved")
 

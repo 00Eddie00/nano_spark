@@ -23,7 +23,7 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list, mul
     fluo_dir_list_len = len(filenames)  # 当前生成文件数
     position_list_len = len(position_list)
     # 哪个文件，该文件取两个点 (0, 0) (300, 0)
-    position_con = np.empty((position_list_len, fluo_dir_list_len))
+    position_con = np.empty((position_list_len, fluo_dir_list_len // multiple + 1))
     # 文件数，每隔10个（或100个）文件计算一次
     for fluo_file_index in range(0, fluo_dir_list_len, multiple):
         filename = filenames[fluo_file_index]
@@ -52,12 +52,12 @@ def optical_blurring(dirname, position_list):
     z_c_val = C_VAL
     multiple = 100
     position_con = temporal_distribution(dirname, kernel, xy_c_val, 0, position_list, multiple)
-    new_position_con = shrink_files(position_con, multiple)
+    # new_position_con = shrink_files(position_con, multiple)
     # 2
-    for position_index in range(len(new_position_con)):
+    for position_index in range(len(position_con)):
         np.savetxt(
             f"{result_set}/{dirname}_psf_({position_list[position_index][0]},{position_list[position_index][1]}).csv"
-            , new_position_con[position_index])
+            , position_con[position_index])
 
 
 def main():
