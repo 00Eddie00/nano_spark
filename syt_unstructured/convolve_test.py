@@ -46,7 +46,7 @@ class MyTestCase(unittest.TestCase):
         # 创建两个三维数组
         concentration = np.random.rand(601, 601, 16)
         # concentration = np.full((601, 601, 16), 20)
-        kernel = np.load("optical_blurring/kernel_v1.npy", allow_pickle=True)
+        kernel = np.load("optical_blurring/kernel/kernel_v1.npy", allow_pickle=True)
         matrix1 = convolve3d(concentration, kernel, C_VAL, 0)
         print(concentration[456, 356, 6])
         print("******************************")

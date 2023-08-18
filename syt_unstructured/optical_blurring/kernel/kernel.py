@@ -1,5 +1,5 @@
 import numpy as np
-from ob_parameters import *
+from optical_blurring.ob_parameters import *
 
 
 def gaussian_function(w, sigma):

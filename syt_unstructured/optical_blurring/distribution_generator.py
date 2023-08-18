@@ -41,7 +41,7 @@ def temporal_distribution(dirname, kernel, xy_c_val, z_c_val, position_list, mul
 
 
 def optical_blurring(dirname, position_list):
-    kernel = np.load("../optical_blurring/kernel_v1.npy", allow_pickle=True)
+    kernel = np.load("kernel/kernel_v1.npy", allow_pickle=True)
     result_set = "../result/NANO2"
     # C_VAL = 0.0
     if dirname == "CaG":

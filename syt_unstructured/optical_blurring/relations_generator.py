@@ -48,7 +48,7 @@ def nano_judge_relation():
 
 
 def nano_relations_refine():
-    relations = np.load("relations.npy")
+    relations = np.load("relation/relations.npy")
     refined_relations = np.copy(relations)
     print("修改一些点")
     for i in range(601):
@@ -117,8 +117,8 @@ def open_judge_relation():
     # 总共要取[[0, 0], [100, 0], [300, 0], [400, 0]]
     my_position_list = [[400, 0]]
     for position_index in range(len(my_position_list)):
-        dis = my_position_list[position_index][0]  # 0,100,300,400
-        x_end = dis + 500
+        dis = my_position_list[position_index][0]  # 400
+        x_end = dis + 500  # 900
         y_end = 500
         z_end = 500
         # 每隔1nm取一个点
