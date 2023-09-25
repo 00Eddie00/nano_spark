@@ -63,7 +63,7 @@ def main():
     dir_path = "../result/"
     time_interval = 2 * 10 ** -6 * 100 * 1000
 
-    # caf卷积画图
+    # # caf卷积画图
     # dis_dirname = "NANO"
     # species = "CaF"
     # caf_position_list = [[0, 0], [100, 0], [300, 0], [400, 0]]
@@ -74,7 +74,7 @@ def main():
     #     temporal_plotter(temporal_path, time_interval, save=True)
 
     # cag卷积画图
-    dis_dirname = "NANO"
+    dis_dirname = "NANO_basic_parameter"
     species = "CaG"
     cag_position_list = [[0, 0], [300, 0]]
     for i in range(len(cag_position_list)):

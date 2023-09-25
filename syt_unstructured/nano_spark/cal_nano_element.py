@@ -32,7 +32,7 @@ def cal_dye_and_buffers(f, caf, cag, cab1, cab2, cab3, cab4):
     return j_fdye, j_gdye, j_1, j_2, j_3, j_4, new_cag, new_cab1, new_cab2, new_cab3, new_cab4
 
 
-def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_out):
+def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_out, bcnl_elements):
     # 计算染料和缓冲物
     j_fdye, j_gdye, j_1, j_2, j_3, j_4, new_cag, new_cab1, new_cab2, new_cab3, new_cab4 = cal_dye_and_buffers(f, caf,
                                                                                                               cag, cab1,
@@ -40,11 +40,10 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                                                                                                               cab3,
                                                                                                               cab4)
     # 计算三角形系数
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
-        nano_grid_file_name, nod_file_name)
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = bcnl_elements
 
     # 上一次迭代得到的值
-    last = np.zeros(NP)
+    last = np.copy(f)
     # 此时刻计算最终结果
     temp = np.zeros(NP)
     for j in range(0, 10):
@@ -70,9 +69,9 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                     if npoch[nod2] == B_INNER or npoch[nod3] == B_INNER:
                         f2i, f3i = f[nod2], f[nod3]
                         if j != 0:
-                            # f2i, f3i = last[nod2], last[nod3]
                             f2i, f3i = (f[nod2] + last[nod2]) / 2.0, (f[nod3] + last[nod3]) / 2.0
-
+                        # 学长没有判断第几次迭代
+                        # f2i, f3i = last[nod2], last[nod3]
                         item_2 = item_2 + D_CA * (
                                 (f2i * b_arr[near_triangle_index, point2] + f3i * b_arr[near_triangle_index, point3]) *
                                 nix_multiply_l[near_triangle_index, point_index] + (
@@ -83,7 +82,8 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
                             near_triangle_index, point_index] + c_arr[near_triangle_index, point_index] *
                                                   niy_multiply_l[
                                                       near_triangle_index, point_index])
-
+                    # 学长没有判断第几次迭代
+                    # f2jk, f3jk = last[nod2], last[nod3]
                     f2jk, f3jk = f[nod2], f[nod3]
                     if j != 0:
                         f2jk, f3jk = last[nod2], last[nod3]
@@ -106,14 +106,12 @@ def nano_calculation_f(k_ryr, f, caf, cag, cab1, cab2, cab3, cab4, ca_jsr, c_ca_
     return new_f, new_cag, new_cab1, new_cab2, new_cab3, new_cab4
 
 
-def nano_calculation_g2(f, caf, c_caf_out):
+def nano_calculation_g2(f, caf, c_caf_out, bcnl_elements):
     j_fdye = np.zeros(NP)
     for i in range(0, NP):
         j_fdye[i] = -K_F3_PLUS * f[i] * (F3_T - caf[i]) + K_F3_MINUS * caf[i]
-    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
-        nano_grid_file_name, nod_file_name)
-
-    last = np.zeros(NP)
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = bcnl_elements
+    last = np.copy(caf)
     temp = np.zeros(NP)
     for j in range(0, 10):
         for i in range(0, NP):
@@ -132,9 +130,10 @@ def nano_calculation_g2(f, caf, c_caf_out):
                     nod3 = nods[near_triangle_index, point3]
                     in_boundary, out_boundary, inner = judge_point(near_triangle_index, nods, npoch)
                     if npoch[nod2] == B_INNER or npoch[nod3] == B_INNER:
+                        # 学长没有判断第几次迭代
+                        # g2i, g3i = last[nod2], last[nod3]
                         g2i, g3i = caf[nod2], caf[nod3]
                         if j != 0:
-                            # g2i, g3i = last[nod2], last[nod3]
                             g2i, g3i = (caf[nod2] + last[nod2]) / 2.0, (caf[nod3] + last[nod3]) / 2.0
                         item_2 = item_2 + D_CAF * ((g2i * b_arr[near_triangle_index, point2] + g3i * b_arr[
                             near_triangle_index, point3]) * nix_multiply_l[near_triangle_index, point_index] + (
@@ -147,6 +146,8 @@ def nano_calculation_g2(f, caf, c_caf_out):
                     g2k, g3k = caf[nod2], caf[nod3]
                     if j != 0:
                         g2k, g3k = last[nod2], last[nod3]
+                    # 学长没有判断第几次迭代
+                    # g2k, g3k = last[nod2], last[nod3]
                     gk = (g2k + g3k) / 3.0
                     if len(out_boundary) == 2:
                         length_k = cal_length(out_boundary, grids)

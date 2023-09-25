@@ -1,12 +1,10 @@
 from concentration_matrix_generator_final import *
 from tool.shrink_file import *
 import time
-import re
+from tool.tool_mkdir import *
 
-
-# 用这个，最快了
-def temporal_distribution_v5(dirname, kernel, xy_c_val, z_c_val, position_list, multiple):
-    print("temporal_distribution开始")
+def no_conv_temporal_distribution(dirname, xy_c_val, z_c_val, position_list):
+    print("no_conv_temporal_distribution开始")
     nano_path = "E:\\github_test\\nano_spark\\DATA\\result\\NANO_basic_parameter"
     open_path = "E:\\github_test\\nano_spark\\DATA\\result\\OPEN_basic_parameters"
     # 初始化各点Ca浓度
@@ -24,7 +22,7 @@ def temporal_distribution_v5(dirname, kernel, xy_c_val, z_c_val, position_list, 
     grid_coordinates = np.loadtxt("../config/open/open_grid_coordinates.csv", delimiter=",")
     # 创建一个哈希表（字典）用于存储坐标值与索引的映射
     coordinates_dict = {(z, r): i for i, (z, r) in enumerate(grid_coordinates)}
-    # 文件数，每隔10个（或100个）文件计算一次
+    # 文件数，每隔100个文件计算一次
     for fluo_file_index in range(0, fluo_dir_list_len):
         nano_file = nano_filenames[fluo_file_index]
         open_file = open_filenames[fluo_file_index]
@@ -40,20 +38,16 @@ def temporal_distribution_v5(dirname, kernel, xy_c_val, z_c_val, position_list, 
             processed_con_matrix, mid = process_concentration_v5(nano_processed, open_c, xy_c_val,
                                                                  position_list_i, grids_rz, xy_index, radius_list,
                                                                  coordinates_dict)
-            matrix = convolve3d(processed_con_matrix, kernel, xy_c_val, z_c_val)
             # 记录程序结束时间
             end_time = time.time()
             # 计算程序运行时间
             elapsed_time = end_time - start_time
             print(f"程序运行时间: {elapsed_time:.6f} 秒")
-            position_con[position_index, fluo_file_index] = matrix[mid - 1, mid - 1, mid - 1]
+            position_con[position_index, fluo_file_index] = processed_con_matrix[mid - 1, mid - 1, mid - 1]
     return position_con
 
 
-def optical_blurring(dirname, position_list):
-    kernel = np.load("kernel/kernel_v2.npy", allow_pickle=True)
-    result_set = "../result/NANO_basic_parameter"
-    # C_VAL = 0.0
+def no_conv_optical_blurring(dirname, position_list):
     # 开放空间中没有
     if dirname == "CaG":
         C_VAL = 0.0  # 用于纳米钙火花
@@ -61,19 +55,21 @@ def optical_blurring(dirname, position_list):
         C_VAL = 4.081632653061224858e-03  # 用于钙火花
     xy_c_val = C_VAL
     z_c_val = C_VAL
-    multiple = 100
-    position_con = temporal_distribution_v5(dirname, kernel, xy_c_val, 0, position_list, multiple)
+
+    result_set = "../result/NANO_v2_parameter"
+    mkdir(f"{result_set}")
+    position_con = no_conv_temporal_distribution(dirname, xy_c_val, 0, position_list)
     # 2
     for position_index in range(len(position_con)):
         np.savetxt(
-            f"{result_set}/{dirname}_psf_({position_list[position_index][0]},{position_list[position_index][1]}).csv"
+            f"{result_set}/no_conv_{dirname}_v2_({position_list[position_index][0]},{position_list[position_index][1]}).csv"
             , position_con[position_index])
 
 
 def main():
     dirname = "CaF"
     my_position_list = [[0, 0], [100, 0], [300, 0], [400, 0]]
-    optical_blurring(dirname, my_position_list)
+    no_conv_optical_blurring(dirname, my_position_list)
 
 
 if __name__ == "__main__":

@@ -1,15 +1,16 @@
 from cal_nano_element import *
 from nano_spark.open.cal_open_elements import *
 from nano_parameters import *
-from nano_spark.open.open_parameters import open_grid_file_name
 from tool.tool_mkdir import *
 import os
+import re
+from tool.del_files import del_version_file
 
 
 def nano_spark(is_continue, total_steps):
     # ryr通道开放时间对应的步数
     release_step = int(RELEASE_TIME / DT)
-    grid_coordinates = np.loadtxt(open_grid_file_name, delimiter=",")  # 点坐标
+    grid_coordinates = np.loadtxt("../config/open/open_grid_coordinates.csv", delimiter=",")  # 点坐标
     out_boundary_length = cal_out_boundary_length(grids)
     # 点个数
     point_count = len(grid_coordinates)
@@ -26,6 +27,20 @@ def nano_spark(is_continue, total_steps):
     open_c_ca_prefix = f"{dir_name}/OPEN/Ca/Ca"
     open_c_caf_prefix = f"{dir_name}/OPEN/CaF/CaF"
     open_c_cab_prefix = f"{dir_name}/OPEN/CaB/CaB"
+
+    nano_grid_file_name, nod_file_name = "../config/nano/4RYRgridt.dat", "../config/nano/4RYRnod.dat"
+    # 计算三角形系数
+    single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr, c_arr, nmax, total_area = cal_elements(
+        nano_grid_file_name, nod_file_name)
+    bcnl_elements = np.array(
+        [single_area, control_area, near_triangle, index_in_triangle, nix_multiply_l, niy_multiply_l, a_arr, b_arr,
+         c_arr, nmax, total_area], dtype=object)
+
+    neighbors = np.loadtxt("../config/open/open_neighbor.csv", int, delimiter=",")  # 邻点
+    # 学长将系数*2
+    # coefficients = np.load("../config/open/coefficient.npy") * 2
+    coefficients = np.load("../../config/open/coefficient.npy")
+
     # 从0开始
     current_step = 1
     if is_continue:
@@ -35,8 +50,12 @@ def nano_spark(is_continue, total_steps):
         dirnames = ["Ca", "CaB", "CaF", "CaG"]
         # 初始化各点Ca浓度
         filenames = os.listdir(f"{path}{dir_nano}{dirnames[0]}/")  # 目前所有步数的浓度文件
-        current_step = len(filenames)  # 当前生成文件数
         last_filename = filenames[-1]
+        matches = re.findall(r'[0-9]', last_filename)
+        # 将匹配的数字转换为整数或字符串
+        current_step = int(''.join(matches)) + 1  # 如果需要提取的数字作为整数
+        if current_step >= release_step:
+            k_ryr = 0
         nano_f = np.loadtxt(f"{path}{dir_nano}{dirnames[0]}/{last_filename}")
         open_f = np.loadtxt(f"{path}{dir_open}{dirnames[0]}/{last_filename}")
 
@@ -164,9 +183,11 @@ def nano_spark(is_continue, total_steps):
                                                                                                                   nano_cab3,
                                                                                                                   nano_cab4,
                                                                                                                   ca_jsr,
-                                                                                                                  c_ca_out)
-        new_nano_caf = nano_calculation_g2(nano_f, nano_caf, c_caf_out)
+                                                                                                                  c_ca_out,
+                                                                                                                  bcnl_elements)
+        new_nano_caf = nano_calculation_g2(nano_f, nano_caf, c_caf_out, bcnl_elements)
 
+        # 学长没更新边界
         # n + 1 步的浓度，计算出流边界平均值
         out_boundary_c_ca = np.sum(new_nano_f[84:205] * out_boundary_length) / np.sum(out_boundary_length)
         out_boundary_c_caf = np.sum(new_nano_caf[84:205] * out_boundary_length) / np.sum(out_boundary_length)
@@ -184,8 +205,11 @@ def nano_spark(is_continue, total_steps):
                                                                                                     open_cab1,
                                                                                                     open_cab2,
                                                                                                     open_cab3,
-                                                                                                    open_cab4)
-        new_open_caf = open_calculation_caf(open_f, open_caf)
+                                                                                                    open_cab4,
+                                                                                                    grid_coordinates,
+                                                                                                    neighbors,
+                                                                                                    coefficients)
+        new_open_caf = open_calculation_caf(open_f, open_caf, grid_coordinates, neighbors, coefficients)
 
         # 保存文件
         length = len(str(i))
@@ -244,6 +268,7 @@ def nano_spark(is_continue, total_steps):
 
 
 if __name__ == '__main__':
-    is_continue = True
-    total_steps = 20000
+    is_continue = False
+    total_steps = 20
     nano_spark(is_continue, total_steps)
+    # del_version_file("v2")
